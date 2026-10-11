@@ -2,6 +2,9 @@
 
 Maintained across sessions. If I learn something or change the pipeline, update this file — reconcile stale lines, don't just append.
 
+## Layout (reorganised 11/10/2026)
+`scripts/` = `build_webtech_exN.py` · `records/ExN/` = finished record docx · `output/ExN/` = the site files + `output_*.jpg` screenshots (what gets deployed/captured) · `assignments/` = Assignment1, bmicalc, classassignments, learning_materials (standalone teacher deliverables, not numbered exercises) · `materials/` = teacher uploads. Builders now write the docx to `records/ExN/`; they still read the site files from `output/ExN/`.
+
 ## What this is
 Cleo's Web Technologies lab, course **23CS2049 - Web Technology Lab**. Reg
 no **URK24CS1021**.
@@ -117,7 +120,7 @@ render it in a browser" — no synthesized/drawn screenshots:
    previous one before moving on). Copy the saved temp files into
    `output/ExN/` and use 2-4 of them as the record's Output images instead
    of one impossible full-page shot.
-4. `build_webtech_ExN.py` only assembles the docx around files that already
+4. `scripts/build_webtech_ExN.py` only assembles the docx around files that already
    exist for real (`index.html`, the screenshots) — it doesn't render or
    screenshot anything itself, that part is inherently an interactive step
    I do once via the browser tools, not a repeatable pure-Python build step
@@ -145,7 +148,7 @@ deployed URL into the record. This is now automated:
 - To add a new experiment: copy its deployable files into a new `ExN/`
   folder in the WebTechLab clone, add a link on the root `index.html`,
   commit, push. Then set `GITHUB_LINK` in that experiment's
-  `build_webtech_ExN.py` to the real deployed URL and rebuild the docx —
+  `scripts/build_webtech_ExN.py` to the real deployed URL and rebuild the docx —
   don't leave the GitHub Host Link cell blank once the real URL is known
   (see feedback note below).
 - Verify a deploy actually landed before calling it done: poll
@@ -185,7 +188,7 @@ placeholder and inserts the code block / images right after it
   text from any other template.
 - **`index.html` references `banner.png` by relative path — when Cleo pushes to GitHub for the Pages link, `banner.png` has to go in the same repo/directory, not just `index.html`.** Pushing only the HTML file means the live graded page shows a broken image. Flag this to her explicitly every time there's a local asset, don't assume it's obvious.
 - **GitHub Host Link cell is filled with the real deployed URL** (a
-  `GITHUB_LINK` constant near the top of each `build_webtech_ExN.py`) now
+  `GITHUB_LINK` constant near the top of each `scripts/build_webtech_ExN.py`) now
   that the deploy repo exists — see "Deploy repo" below. Before the repo
   existed this was left blank as student-supplied, same category as DSE's
   `CODE EXPLANATION LINK`; now that it's automated, always fill it for real,
@@ -235,7 +238,7 @@ Cleo asks to change it, for visual continuity across the semester's site.
 ```
 Subjects/WebTech/
   PIPELINE.md
-  build_webtech_ex1.py, build_webtech_ex2.py
+  scripts/build_webtech_ex*.py (docx lands in records/ExN/)
   materials/            — teacher-provided: Exercise 1.docx (question paper),
                           Ex 2 Sample.docx (sample code, not a full question
                           paper), Lab Record Format.docx (the fill-in template,
@@ -247,7 +250,7 @@ Subjects/WebTech/
 ```
 
 ## Assignment1 — different from the Ex1/Ex2 exercises (04/08/2026)
-Assignment1 (`output/Assignment1/`) is a separate teacher deliverable, not part of
+Assignment1 (`assignments/Assignment1/`) is a separate teacher deliverable, not part of
 the Ex1/Ex2 "Respawn Point" sequence — own theme (**Travel Diary**, Cleo's
 choice), own submission format:
 - **Zero CSS at all**, not even inline colors — `materials/Assignment 1.docx`
@@ -263,7 +266,7 @@ choice), own submission format:
 - **Real photos/video**: Cleo dropped her own trip photos (`travpic1-3.jpeg`)
   and a video (`travvid.mp4`, though it turned out to be gameplay footage, not
   an actual trip clip — worth double-checking with her if a similarly odd file
-  shows up again) straight into `output/Assignment1/`, no generation needed for
+  shows up again) straight into `assignments/Assignment1/`, no generation needed for
   those. Only the favicon and a short placeholder audio chime are
   Python-generated (`generate_assets.py`); no local video-encoding lib is
   available (no ffmpeg/opencv/moviepy installed), so a real trip video with no
@@ -274,6 +277,110 @@ choice), own submission format:
   multi-page PDF), no reportlab/fpdf dependency needed.
 - Single HTML page with anchor-based `<nav>`, not multiple linked pages — the
   assignment allows multiple pages but doesn't require them.
+
+## Ex3 (17/08/2026) -- responsive HTML5+CSS3, no formal question paper
+Cleo said the teacher wants "a responsive version of the same pages," and
+dropped `materials/Ex3.html` as the sample (a generic "ABC Engineering
+College" page: header/nav/hero/sidebar+content/card-grid/footer, Flexbox,
+three `@media` breakpoints at 992/768/480px) -- no `Exercise 3.docx` question
+paper exists, unlike Ex1/Ex2. Built `output/Ex3/index.html` by reskinning
+Ex1's existing Respawn Point content onto that same structural pattern rather
+than inventing new copy: nav links become the flex nav bar, the About/Games/
+Roles/Join/Rules/Contact sections become the `.content` column, the featured
+games table became a `.cards` flex grid (4 cards, same game data), a short
+"Community Roles" name list became the `.sidebar`, banner.png got its
+hardcoded `width="700"` HTML attribute swapped for CSS `max-width:100%` so
+it's actually responsive. All CSS moved from Ex1/Ex2's inline `style=`
+attributes into one internal `<style>` block, since media queries can't
+override inline styles -- first time this site has used internal CSS rather
+than inline. **`<meta name="viewport" content="width=device-width,
+initial-scale=1.0">` is required** for any of this to matter on a real phone
+(without it mobile browsers fake a desktop-width viewport and zoom out
+instead of reflowing) -- Cleo specifically flagged that the viewport meta tag
+and the media queries both needed to be there since that's what was taught;
+both were already present in the first build, confirmed via grep rather than
+regenerating.
+
+**`resize_window` did not work in this session** -- it always returned
+"success" but `window.innerWidth`/`outerWidth` never changed (stuck at
+whatever the maximized window's actual size was, 1667px), even down to
+500x700. This is a harder failure than the previously-documented "capped to
+screen bounds" gotcha ([[webtech-lab-workflow]]) -- here it didn't shrink at
+all, not just failed to exceed screen size. CSS `zoom` on `<html>` doesn't
+trigger media queries either (magnifies rendering without changing the
+effective layout-viewport width `@media` reads). **Workaround that worked:**
+build a tiny local harness page (`<iframe id="f" src="index.html" width="900"
+height="1400">`) and set `iframe.width` via `javascript_tool` before each
+screenshot -- an iframe's own `width` attribute drives its *own* internal
+viewport width independent of the outer browser window, so `@media` queries
+inside it evaluate against that width for real. Set `f.contentWindow.
+location.reload()` after changing width (media queries don't always
+re-evaluate live off a resize-less width change), then use `computer` with
+action `zoom` on the region `[0,0,width,812]` to capture just the iframe
+(not the surrounding harness page) -- `save_to_disk:true` to get a real file.
+Delete the harness file once done, it's not part of the deployable site.
+**If a future WebTech/DSE/etc. exercise ever needs multi-viewport
+screenshots again, reach for this iframe-harness trick immediately instead
+of re-trying `resize_window`.**
+
+Screenshots: `output_1_desktop.png` (1200px, sidebar+content side by side,
+4-card row), `output_2_tablet.png` (900px, <=992px breakpoint, sidebar
+stacks full-width above content), `output_3_mobile_nav.png` (400px, <=768px
+breakpoint, nav collapses to a vertical column), `output_4_mobile_cards.png`
+(400px, scrolled, cards stack full-width one per row) -- four frames instead
+of Ex1/Ex2's usual two top/bottom pair, because the point of this exercise is
+showing the SAME content reflow at three different widths, not just scrolling
+one width.
+
+Deployed to `https://kukyos.github.io/WebTechLab/Ex3/index.html` (+
+`Ex3/banner.png`), verified 200 on both after the Pages build finished.
+`build_webtech_ex3.py` follows the exact same fill pattern as ex1/ex2.
+
+## Ex4 (24/08/2026) -- advanced CSS3, no formal question paper
+Teacher gave `materials/EX4.pptx` (no `.docx` question paper) covering seven
+CSS3 features: `border-radius`, `border-image`, multiple comma-separated
+`background-image` layers, `background-size` (cover/contain), pseudo-classes
+(`:focus`/`:required`/`:valid`/`:invalid`), the adjacent sibling combinator
+(`A + B`), and `:nth-child(odd/even)` -- the slide deck's own closing slide
+says to build one `webpage.html` demonstrating all seven together. Built as
+a new themed page, "Interface Lab", linked from Ex1's nav via `../Ex4/
+index.html` and reachable from Ex1's Get In Touch section, rather than
+folded into the existing multi-section site -- one themed section per
+feature: Rank Badges (border-radius), Event Notice Board (border-image),
+Guild Banner (layered backgrounds), Banner Preview (background-size cover
+vs contain, reusing Ex1's `banner.png`), Quick Join form (pseudo-classes),
+Loadout (adjacent sibling hover-reveal), Server Leaderboard (nth-child
+striping + hover). All new local images (`border_deco.png`, `bg_emblem.png`,
+`bg_pattern.png`, `icon_blade/shield/potion.png`) generated with PIL via
+`output/Ex4/generate_assets.py`, no network fetches.
+
+**Real bug caught by testing in the browser, not just reading the CSS:**
+first draft defined `.join-form input:focus` *before* `.join-form
+input:required` in the stylesheet. Both selectors have identical
+specificity (element + one pseudo-class), so on the required email field
+that was also focused, the later `:required` rule's green border silently
+won over `:focus`'s orange -- the :focus demo looked broken in the actual
+browser even though the CSS "looked correct" on read-through. Fixed by
+reordering so `:required` comes first and `:focus` last (cascade order
+breaks the specificity tie). **General lesson: when two pseudo-class rules
+on the same element can both legitimately apply, check which one should
+visually win and put that one LAST in the stylesheet -- don't assume the
+"more specific-sounding" rule wins, source order is the actual tiebreaker
+at equal specificity.** Caught only by actually clicking into the field and
+typing, per the run-for-real philosophy -- reading the CSS file would not
+have surfaced this.
+
+Screenshots (desktop width only this time -- Ex4 isn't a responsiveness
+exercise, no iframe-harness needed): `output_1_top.jpg` (badges + border
+image), `output_2_backgrounds.jpg` (guild banner + cover/contain), `output_
+3_pseudoclasses.jpg` (squad tag filled, email mid-typing "abc" showing red
+:invalid text and the orange :focus border), `output_4_leaderboard.jpg`
+(loadout blade icon revealed via hover, leaderboard row 3 hover-highlighted).
+
+Deployed to `https://kukyos.github.io/WebTechLab/Ex4/index.html` (+ all 7
+local image assets), verified 200 on every one after the Pages build
+finished. `build_webtech_ex4.py` follows the exact same fill pattern as
+ex1/2/3.
 
 ## To do more WebTech experiments
 Same theme/site unless told otherwise. Write the real HTML/CSS(/JS once that

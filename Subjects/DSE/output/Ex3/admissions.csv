@@ -1,0 +1,16 @@
+Student_ID,GPA,SAT_Score,ACT_Score,Extracurriculars,Recommendation_Strength,Admitted
+U001,3.8,1420,32,3,Strong,Yes
+U002,3.2,1200,26,1,Weak,No
+U003,4.0,1560,35,5,Strong,Yes
+U004,3.5,1310,29,2,Moderate,Yes
+U005,3.9,1480,33,4,Strong,Yes
+U006,3.1,1150,24,1,Weak,No
+U007,3.7,1380,30,3,Moderate,Yes
+U008,3.0,1100,22,0,Weak,No
+U009,4.0,1520,34,5,Strong,Yes
+U010,3.6,1350,28,2,Moderate,Yes
+U011,3.3,1250,27,1,Weak,No
+U012,3.8,1450,31,4,Strong,Yes
+U013,3.4,1280,27,2,Moderate,No
+U014,3.9,1500,33,5,Strong,Yes
+U015,3.2,1180,25,1,Weak,No

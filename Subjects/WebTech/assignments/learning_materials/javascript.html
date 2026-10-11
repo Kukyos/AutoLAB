@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>JavaScript Playground</title></head>
+<body>
+<h1>JavaScript 1-2 Mark Playground</h1>
+
+<h2>console.log()</h2>
+<p>Open DevTools → Console to see these.</p>
+<script>
+console.log("Hello, World!");
+
+let number = 10;
+let text = "Hello";
+let passed = true;
+console.log(number, text, passed);
+
+// Array and object access
+let student = {
+  name: "Armaan",
+  marks: [80, 90, 95]
+};
+console.log("Student name:", student.name);
+console.log("First mark:", student.marks[0]);
+console.log("Third mark:", student.marks[2]);
+
+// Function
+function addItem(product) {
+  console.log("Item added: " + product);
+}
+addItem("Laptop");
+
+// JSON
+let book = {
+  title: "The Hobbit",
+  authors: ["J.R.R. Tolkien"],
+  isAvailable: true
+};
+
+let jsonString = JSON.stringify(book);
+console.log("JSON string:", jsonString);
+
+let bookObject = JSON.parse(jsonString);
+console.log("Object:", bookObject);
+console.log("Title:", bookObject.title);
+console.log("First author:", bookObject.authors[0]);
+
+if (bookObject.isAvailable) {
+  console.log("Available");
+} else {
+  console.log("Not Available");
+}
+</script>
+
+<h2>confirm()</h2>
+<button onclick="checkProceed()">Ask confirmation</button>
+<p id="confirmResult"></p>
+
+<h2>if / else</h2>
+<label>Enter marks: <input id="marks" type="number"></label>
+<button onclick="grade()">Check Grade</button>
+<p id="gradeResult"></p>
+
+<script>
+function checkProceed() {
+  let answer = confirm("Do you want to proceed?");
+  document.getElementById("confirmResult").textContent =
+    answer ? "You clicked OK → true" : "You clicked Cancel → false";
+}
+
+function grade() {
+  let marks = Number(document.getElementById("marks").value);
+  let result;
+
+  if (marks >= 90) {
+    result = "A";
+  } else if (marks >= 75) {
+    result = "B";
+  } else if (marks >= 50) {
+    result = "C";
+  } else {
+    result = "Fail";
+  }
+
+  document.getElementById("gradeResult").textContent = "Grade: " + result;
+}
+</script>
+</body>
+</html>

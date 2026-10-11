@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respawn Point - Online Gaming Community</title>
+<style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #1c1b18;
+  color: #eae6df;
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background: #242220;
+  padding: 20px;
+  text-align: center;
+}
+header h1 { color: #e8792c; }
+header p { color: #b7b1a4; }
+
+/* Navigation */
+nav { background: #151412; }
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  flex-wrap: wrap;
+}
+nav li { padding: 15px; }
+nav a { color: #eae6df; text-decoration: none; }
+nav li:hover { background: #e8792c; }
+nav li:hover a { color: #1c1b18; }
+
+/* Hero */
+.hero {
+  background: #242220;
+  padding: 50px;
+  text-align: center;
+}
+.hero h2 { color: #e8792c; }
+.hero p { color: #b7b1a4; margin-top: 10px; }
+
+.banner-link img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* Main container: sidebar + content, side by side until it doesn't fit */
+.container {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+.sidebar {
+  width: 25%;
+  background: #242220;
+  padding: 20px;
+  border-radius: 10px;
+  height: fit-content;
+}
+.sidebar h3 { color: #f3a15c; }
+.sidebar ul { list-style: none; margin-top: 10px; }
+.sidebar li {
+  padding: 10px;
+  border-bottom: 1px solid #3a372f;
+  color: #7fae5a;
+}
+
+.content { width: 75%; }
+.content h2 { color: #f3a15c; margin-bottom: 10px; }
+.content h3 { color: #7fae5a; margin-top: 15px; }
+.content section { margin-bottom: 30px; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #3a372f; padding: 8px; text-align: left; }
+th { background: #242220; color: #e8792c; }
+
+/* Cards */
+.cards {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.card {
+  flex: 1;
+  min-width: 200px;
+  background: #242220;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  border-top: 3px solid #e8792c;
+}
+.card h3 { color: #e8792c; margin-top: 0; }
+.card p { color: #b7b1a4; margin: 8px 0; }
+
+button {
+  background: #e8792c;
+  color: #1c1b18;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover { background: #f3a15c; }
+
+/* Footer */
+footer {
+  background: #242220;
+  color: #b7b1a4;
+  padding: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+footer a { color: #e8792c; }
+
+/* Tablet */
+@media screen and (max-width: 992px) {
+  .container { flex-direction: column; }
+  .sidebar, .content { width: 100%; }
+  .card { min-width: 45%; }
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  nav ul { flex-direction: column; align-items: center; }
+  .cards { flex-direction: column; }
+  .card { width: 100%; }
+  .hero { padding: 30px; }
+}
+
+/* Small mobile */
+@media screen and (max-width: 480px) {
+  header h1 { font-size: 24px; }
+  .hero h2 { font-size: 22px; }
+  button { width: 100%; }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Respawn Point</h1>
+  <p>a place to find your next squad, not just your next game</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#games">Games</a></li>
+    <li><a href="#roles">Roles</a></li>
+    <li><a href="#join">Join</a></li>
+    <li><a href="#rules">Rules</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <h2>Squad Up, Respawn Together</h2>
+  <p>This page now resizes itself for phones, tablets and desktops -- try shrinking the window and watch the layout fold.</p>
+</section>
+
+<a class="banner-link" href="#games">
+  <img src="banner.png" alt="Respawn Point community banner artwork">
+</a>
+
+<div class="container">
+
+  <div class="sidebar">
+    <h3>Community Roles</h3>
+    <ul>
+      <li>Member</li>
+      <li>Moderator</li>
+      <li>Admin</li>
+    </ul>
+  </div>
+
+  <div class="content">
+
+    <section id="about">
+      <h2>About the Community</h2>
+      <p>
+        Respawn Point started in 2023 as a small Discord server for a few of us
+        who kept getting split into different lobbies. It has grown into a
+        community of a few thousand people across battle royale, racing, MMORPG
+        and FPS games who mostly just want to play with people who won't rage
+        quit on them.
+      </p>
+      <h3>Why we exist</h3>
+      <p>
+        Public matchmaking is fine until your teammate disconnects at the worst
+        possible moment. We're here so that doesn't have to happen every single
+        match.
+      </p>
+    </section>
+
+    <section id="games">
+      <h2>Featured Games</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Nightfall Arena</h3>
+          <p>Battle Royale &middot; 1,204 online &middot; Bronze - Diamond</p>
+          <button>Find a Squad</button>
+        </div>
+        <div class="card">
+          <h3>Circuit Breakers</h3>
+          <p>Racing &middot; 386 online &middot; Open to all</p>
+          <button>Find a Squad</button>
+        </div>
+        <div class="card">
+          <h3>Warden's Keep</h3>
+          <p>MMORPG &middot; 2,891 online &middot; Level 5+</p>
+          <button>Find a Squad</button>
+        </div>
+        <div class="card">
+          <h3>Clutch City</h3>
+          <p>FPS &middot; 977 online &middot; Silver and up</p>
+          <button>Find a Squad</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="roles">
+      <h2>Community Roles</h2>
+      <dl>
+        <dt><b style="color: #7fae5a">Member</b></dt>
+        <dd>Default role once you join. Access to general chat and the game-specific channels.</dd>
+        <dt><b style="color: #7fae5a">Moderator</b></dt>
+        <dd>Keeps the chat civil, handles reports, can mute or kick when needed.</dd>
+        <dt><b style="color: #7fae5a">Admin</b></dt>
+        <dd>Runs events, manages roles, and is who you complain to about the ping tax on Warden's Keep servers.</dd>
+      </dl>
+    </section>
+
+    <section id="join">
+      <h2>How to Join</h2>
+      <ol>
+        <li>Read the rules pinned in #welcome</li>
+        <li>Pick your main game(s):
+          <ol type="a">
+            <li>Battle royale squad</li>
+            <li>Racing crew</li>
+            <li>MMORPG guild</li>
+          </ol>
+        </li>
+        <li>Introduce yourself in #introductions</li>
+        <li>Grab your game roles from the reaction board</li>
+      </ol>
+    </section>
+
+    <section id="rules">
+      <h2>Ground Rules</h2>
+      <ul>
+        <li>Be respectful, no harassment or hate speech
+          <ul>
+            <li>this includes chat, voice channels and in-game lobbies</li>
+          </ul>
+        </li>
+        <li>No spamming or unsolicited DMs</li>
+        <li>Keep NSFW content out of every channel</li>
+        <li>Follow game-specific etiquette:
+          <ul>
+            <li>no griefing teammates</li>
+            <li>no smurfing in ranked lobbies</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>Get In Touch</h2>
+      <p>Email: <a href="mailto:hello@respawnpoint.gg" style="color: #7fae5a">hello@respawnpoint.gg</a></p>
+      <p>Call the community desk: <a href="tel:+919876543210" style="color: #7fae5a">+91 98765 43210</a></p>
+      <p>
+        New to competitive gaming? Wikipedia has a solid
+        <a href="https://en.wikipedia.org/wiki/Esports" target="_blank" style="color: #7fae5a">overview of esports</a>
+        to get you started.
+      </p>
+      <p><a href="../Ex2/index.html" style="color: #7fae5a">Registration form (Ex2)</a></p>
+    </section>
+
+  </div>
+
+</div>
+
+<footer>
+  <p><small>&copy; 2026 Respawn Point. Made for URK24CS1021's Web Tech lab, not an actual gaming company.</small></p>
+</footer>
+
+</body>
+</html>

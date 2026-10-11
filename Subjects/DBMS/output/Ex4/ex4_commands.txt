@@ -1,0 +1,106 @@
+-- Ex4: SET OPERATIONS — URK24CS1021
+-- 23CS2014 Database Systems Lab — 19/08/2026
+-- commands typed at the psql prompt (labdb), in order
+
+-- setup: schema and seed data (not one of the graded questions)
+CREATE TABLE URK24CS1021_employee (ename varchar(50) PRIMARY KEY, city varchar(50));
+CREATE TABLE URK24CS1021_company (cname varchar(50), city varchar(50));
+CREATE TABLE URK24CS1021_emp_company (ename varchar(50), cname varchar(50), salary numeric(10,2), jdate date);
+CREATE TABLE URK24CS1021_manager (ename varchar(50), mname varchar(50));
+CREATE TABLE URK24CS1021_emp_shift (ename varchar(50), shift varchar(5));
+INSERT INTO URK24CS1021_employee (ename, city) VALUES
+    ('Anil', 'Nagpur'), ('Shankar', 'Bombay'), ('Jaya', 'Chennai'),
+    ('Sunil', 'Bombay'), ('Vijay', 'Delhi'), ('Prakash', 'Calcutta'),
+    ('Ajay', 'Nagpur');
+INSERT INTO URK24CS1021_emp_company (ename, cname, salary, jdate) VALUES
+    ('Anil', 'Acc', 1500, '1989-05-01'), ('Shankar', 'TATA', 2000, '1990-07-10'),
+    ('Jaya', 'CMC', 1800, '1991-06-07'), ('Sunil', 'CMC', 1700, '1988-01-01'),
+    ('Vijay', 'TATA', 5000, '1988-01-03'), ('Prakash', 'TATA', 3000, '1989-05-27'),
+    ('Ajay', 'CMC', 8000, '1995-04-30'), ('Amol', 'Acc', 1000, '1995-03-17'),
+    ('Kiran', 'Hyundai Mobis', 30000, '1998-12-18');
+INSERT INTO URK24CS1021_company (cname, city) VALUES
+    ('Acc', 'Chennai'), ('TATA', 'Bombay'), ('Acc', 'Nagpur'),
+    ('CMC', 'Bombay'), ('CMC', 'Chennai'), ('TATA', 'Chennai');
+INSERT INTO URK24CS1021_manager (ename, mname) VALUES
+    ('Anil', 'Ajay'), ('Shankar', 'Vijay'), ('Jaya', NULL),
+    ('Sunil', 'Jaya'), ('Vijay', NULL), ('Prakash', 'Shankar'), ('Ajay', NULL);
+INSERT INTO URK24CS1021_emp_shift (ename, shift) VALUES
+    ('Anil', 'A'), ('Sunil', 'B'), ('Vijay', 'B'), ('Prakash', 'C'), ('Kiran', 'E');
+
+-- Q1. Display the cities of the companies Acc and TATA.
+SELECT city FROM URK24CS1021_company WHERE cname = 'Acc'
+UNION
+SELECT city FROM URK24CS1021_company WHERE cname = 'TATA';
+
+-- Q2. Display the names of the city that is common to companies Acc and TATA.
+SELECT city FROM URK24CS1021_company WHERE cname = 'Acc'
+INTERSECT
+SELECT city FROM URK24CS1021_company WHERE cname = 'TATA';
+
+-- Q3. Find the cities where Acc is located, but not TATA.
+SELECT city FROM URK24CS1021_company WHERE cname = 'Acc'
+EXCEPT
+SELECT city FROM URK24CS1021_company WHERE cname = 'TATA';
+
+-- Q4. Display the names of employees living in Nagpur, and working with company Acc.
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Nagpur'
+INTERSECT
+SELECT ename FROM URK24CS1021_emp_company WHERE cname = 'Acc';
+
+-- Q5. Display the names of employees living in Nagpur, but not working in company Acc.
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Nagpur'
+EXCEPT
+SELECT ename FROM URK24CS1021_emp_company WHERE cname = 'Acc';
+
+-- Q6. List the names of the employees living in city Bombay and having salary >1500
+SELECT e.ename FROM URK24CS1021_employee e, URK24CS1021_emp_company c
+WHERE e.ename = c.ename AND e.city = 'Bombay' AND c.salary > 1500;
+
+-- Q7. Display the names of the employees living in the city Chennai and working with the company CMC.
+SELECT e.ename FROM URK24CS1021_employee e, URK24CS1021_emp_company c
+WHERE e.ename = c.ename AND e.city = 'Chennai' AND c.cname = 'CMC';
+
+-- Q8. Display the names of the employees living in Nagpur, working in Acc, and having shift A.
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Nagpur'
+INTERSECT
+SELECT ename FROM URK24CS1021_emp_company WHERE cname = 'Acc'
+INTERSECT
+SELECT ename FROM URK24CS1021_emp_shift WHERE shift = 'A';
+
+-- Q9. Display the names of the employees living in Nagpur, working in company Acc and not working in shift B.
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Nagpur'
+INTERSECT
+SELECT ename FROM URK24CS1021_emp_company WHERE cname = 'Acc'
+EXCEPT
+SELECT ename FROM URK24CS1021_emp_shift WHERE shift = 'B';
+
+-- Q10. Display the names of employees who are living in Nagpur or Bombay.
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Nagpur'
+UNION
+SELECT ename FROM URK24CS1021_employee WHERE city = 'Bombay';
+
+-- Q11. Display the employee names using union and union all operator.
+SELECT ename FROM URK24CS1021_employee
+UNION
+SELECT ename FROM URK24CS1021_emp_company;
+SELECT ename FROM URK24CS1021_employee
+UNION ALL
+SELECT ename FROM URK24CS1021_emp_company;
+
+-- Q12. Display the employee's name whose joining date is 18-DEC-98 and whose working shift is 'E'.
+SELECT ec.ename FROM URK24CS1021_emp_company ec, URK24CS1021_emp_shift s
+WHERE ec.ename = s.ename AND ec.jdate = '1998-12-18' AND s.shift = 'E';
+
+-- Q13. Use in operator to display the names of the employees living in the same city where Sunil is residing.
+SELECT ename FROM URK24CS1021_employee
+WHERE city IN (SELECT city FROM URK24CS1021_employee WHERE ename = 'Sunil');
+
+-- Q14. Use in operator to display the employees living in the city Bombay and having their company located in the city Delhi.
+SELECT ename FROM URK24CS1021_employee
+WHERE city = 'Bombay' AND ename IN
+    (SELECT ename FROM URK24CS1021_emp_company WHERE cname IN
+        (SELECT cname FROM URK24CS1021_company WHERE city = 'Delhi'));
+
+-- Q15. Display the names of the employees having same city as Ajay [Hint: Use IN operator]
+SELECT ename FROM URK24CS1021_employee
+WHERE city IN (SELECT city FROM URK24CS1021_employee WHERE ename = 'Ajay');

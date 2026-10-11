@@ -1,0 +1,11 @@
+Employee_ID,Name,Gender,Age,Genre,Annual_Income,Appraisal Marks,Overall Score
+201,Aarav,Male,24,Male,32000,78,82
+202,Diya,Female,27,Female,35000,91,88
+203,Rohan,Male,NaN,Male,30000,NaN,75
+204,Ananya,Female,29,Female,NaN,86,90
+205,Karan,Male,31,Male,42000,65,NaN
+206,Meera,Female,26,Female,38000,NaN,79
+207,Vikram,Male,NaN,Male,40000,72,84
+208,Sara,Female,30,Female,NaN,95,92
+209,Arjun,Male,28,Male,36000,68,76
+210,Nisha,Female,25,Female,34000,NaN,85

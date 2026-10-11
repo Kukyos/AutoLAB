@@ -2,6 +2,9 @@
 
 Maintained across sessions. If I learn something or change the pipeline, update this file — reconcile stale lines, don't just append under them.
 
+## Layout (reorganised 11/10/2026)
+`scripts/dbms_lab.py` = the builder (was at the subject root; `HERE` is now `parents[1]`) · `records/ExN/` = combined records (teacher-facing) · `output/ExN/` = per-output docx/pdf + `.sql` + `exN_commands.txt` + `screenshots/` · `materials/` = teacher uploads · `archive/`, `others/` unchanged.
+
 ## What this is
 Cleo's **DBMS lab** = course header **"23CS2014 Database Systems Lab"** (question-set PDFs also say "20CS2016L … B1" — different batch, ignore). Reg no **URK24CS1021**. Generate Cleo's records directly; don't route through the website user flow.
 
@@ -15,7 +18,7 @@ Cleo's **DBMS lab** = course header **"23CS2014 Database Systems Lab"** (questio
 ```
 Subjects/DBMS/
   PIPELINE.md
-  dbms_lab.py          — current, real-run builder. Run everything through this.
+  scripts/dbms_lab.py  — current, real-run builder. Run everything through this.
   materials/            — teacher-provided originals: templates, question PDFs/PPTX,
                           + "dbms Record Template.docx" (shipped with a double space in
                           the name; renamed to one space here — the code globs it anyway,
@@ -57,8 +60,8 @@ right and a DPI rule makes them illegibly small.
 
 ## How to run
 ```
-python Subjects/DBMS/dbms_lab.py 3            # full: runs SQL, then output + record + PDFs
-python Subjects/DBMS/dbms_lab.py docs 1a 1b 2 # record + commands.txt + PDFs only, no DB
+python Subjects/DBMS/scripts/dbms_lab.py 3            # full: runs SQL, then output + record + PDFs
+python Subjects/DBMS/scripts/dbms_lab.py docs 1a 1b 2 # record + commands.txt + PDFs only, no DB
 ```
 `build()` **drops the experiment's tables** before running, so never re-run an
 already-built experiment just to regenerate paperwork — that's what `docs` is for.

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respawn Point - Interface Lab</title>
+<style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #1c1b18;
+  color: #eae6df;
+  line-height: 1.6;
+}
+
+header {
+  background: #242220;
+  padding: 20px;
+  text-align: center;
+}
+header h1 { color: #e8792c; }
+header p { color: #b7b1a4; }
+
+nav { background: #151412; }
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  flex-wrap: wrap;
+}
+nav li { padding: 15px; }
+nav a { color: #eae6df; text-decoration: none; }
+nav li:hover { background: #e8792c; }
+nav li:hover a { color: #1c1b18; }
+
+main { max-width: 900px; margin: 0 auto; padding: 20px; }
+section { margin-bottom: 40px; }
+section h2 { color: #f3a15c; margin-bottom: 6px; }
+section > p.blurb { color: #b7b1a4; margin-bottom: 16px; }
+
+/* 1. Rounded corners -- rank badges, one value vs four values */
+.badges { display: flex; gap: 16px; flex-wrap: wrap; }
+.badge {
+  background: #242220;
+  border: 2px solid #7fae5a;
+  padding: 14px 20px;
+  text-align: center;
+  min-width: 110px;
+}
+.badge span { display: block; color: #e8792c; font-weight: bold; }
+.badge.bronze  { border-radius: 8px; }
+.badge.silver  { border-radius: 20px; }
+.badge.gold    { border-radius: 15px 50px 30px 5px; }
+.badge.diamond { border-radius: 50%; }
+
+/* 2. Border image -- event notice board frame */
+.notice {
+  border: 25px solid transparent;
+  border-image: url(border_deco.png) 20 round;
+  padding: 20px;
+  background: #242220;
+}
+.notice h3 { color: #e8792c; }
+
+/* 3. Multiple backgrounds -- guild crest over a tiled pattern */
+.guild-banner {
+  height: 180px;
+  background-image: url(bg_emblem.png), url(bg_pattern.png);
+  background-position: right bottom, left top;
+  background-repeat: no-repeat, repeat;
+  background-color: #242220;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+}
+.guild-banner p { max-width: 60%; color: #eae6df; }
+
+/* 4. background-size: cover vs contain */
+.size-demo { display: flex; gap: 20px; flex-wrap: wrap; }
+.size-box {
+  width: 260px;
+  height: 150px;
+  background-image: url(banner.png);
+  background-repeat: no-repeat;
+  border-radius: 6px;
+  border: 1px solid #3a372f;
+  position: relative;
+}
+.size-box span {
+  position: absolute;
+  bottom: 4px; left: 6px;
+  background: rgba(0,0,0,.6);
+  padding: 2px 6px;
+  font-size: 12px;
+}
+.size-box.cover   { background-size: cover; }
+.size-box.contain { background-size: contain; }
+
+/* 5. Pseudo-classes -- quick join form */
+.join-form { background: #242220; padding: 20px; border-radius: 10px; max-width: 360px; }
+.join-form label { display: block; margin-top: 12px; color: #b7b1a4; }
+.join-form input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 3px solid #3a372f;
+  border-radius: 4px;
+  background: #1c1b18;
+  color: #eae6df;
+}
+.join-form input:required {
+  border-color: #7fae5a;
+}
+.join-form input:focus {
+  border-color: #e8792c;
+  background-color: #2a271f;
+  outline: none;
+}
+.join-form input[type="email"]:invalid { color: #d9534f; }
+.join-form input[type="email"]:valid   { color: #7fae5a; }
+.join-form button {
+  margin-top: 16px;
+  background: #e8792c;
+  color: #1c1b18;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.join-form button:hover { background: #f3a15c; }
+
+/* 6. Adjacent sibling selector -- loadout hover reveal */
+.loadout { list-style: none; }
+.loadout li { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid #3a372f; }
+.item-name { width: 140px; cursor: default; color: #eae6df; }
+.item-img { opacity: 0.2; transition: opacity 0.3s ease; }
+.item-name:hover + .item-img { opacity: 1; }
+
+/* 7. nth-child -- server leaderboard striping */
+table.leaderboard { width: 100%; border-collapse: collapse; }
+table.leaderboard th, table.leaderboard td { padding: 10px; border: 1px solid #3a372f; text-align: left; }
+table.leaderboard th { background: #242220; color: #e8792c; }
+table.leaderboard tr:nth-child(odd)  { background-color: #242220; }
+table.leaderboard tr:nth-child(even) { background-color: #1f1e1b; }
+table.leaderboard tr:hover { background-color: #3a372f; }
+
+footer {
+  background: #242220;
+  color: #b7b1a4;
+  padding: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+footer a { color: #e8792c; }
+
+@media screen and (max-width: 600px) {
+  .badges, .size-demo { flex-direction: column; }
+  .size-box { width: 100%; }
+  .guild-banner p { max-width: 100%; }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Respawn Point</h1>
+  <p>Interface Lab &mdash; CSS3 building blocks used across the site</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#corners">Rounded Corners</a></li>
+    <li><a href="#border">Border Image</a></li>
+    <li><a href="#backgrounds">Backgrounds</a></li>
+    <li><a href="#size">Background Size</a></li>
+    <li><a href="#join">Quick Join</a></li>
+    <li><a href="#loadout">Loadout</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
+    <li><a href="../Ex1/index.html">Back to Home</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <section id="corners">
+    <h2>Rank Badges</h2>
+    <p class="blurb">border-radius, from a single rounded value up to four independent corners.</p>
+    <div class="badges">
+      <div class="badge bronze"><span>Bronze</span>8px all round</div>
+      <div class="badge silver"><span>Silver</span>20px all round</div>
+      <div class="badge gold"><span>Gold</span>15px 50px 30px 5px</div>
+      <div class="badge diamond"><span>Diamond</span>50% (circle)</div>
+    </div>
+  </section>
+
+  <section id="border">
+    <h2>Event Notice Board</h2>
+    <p class="blurb">border-image swaps the plain border line for a sliced, repeated image frame.</p>
+    <div class="notice">
+      <h3>Season 4 Tournament</h3>
+      <p>Sign-ups close Friday. Framed with border-image: url(border_deco.png) 20 round.</p>
+    </div>
+  </section>
+
+  <section id="backgrounds">
+    <h2>Guild Banner</h2>
+    <p class="blurb">Two comma-separated background-image layers: the crest sits no-repeat over a repeating stripe pattern.</p>
+    <div class="guild-banner">
+      <p>Two backgrounds, one element: crest emblem on top, tiled pattern behind it.</p>
+    </div>
+  </section>
+
+  <section id="size">
+    <h2>Banner Preview: cover vs. contain</h2>
+    <p class="blurb">Same image, same box size, two background-size keywords.</p>
+    <div class="size-demo">
+      <div class="size-box cover"><span>cover</span></div>
+      <div class="size-box contain"><span>contain</span></div>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Quick Join</h2>
+    <p class="blurb">:focus highlights the active field, :required marks mandatory fields, :valid/:invalid react to the email format live.</p>
+    <form class="join-form" onsubmit="return false;">
+      <label for="tag">Squad tag (required)</label>
+      <input id="tag" type="text" required placeholder="e.g. NightOwl">
+      <label for="mail">Contact email</label>
+      <input id="mail" type="email" required placeholder="you@example.com">
+      <button type="submit">Request Invite</button>
+    </form>
+  </section>
+
+  <section id="loadout">
+    <h2>Loadout</h2>
+    <p class="blurb">Adjacent sibling selector: hover an item name, the icon next to it fades in.</p>
+    <ul class="loadout">
+      <li><span class="item-name">Blade of Dawn</span><img class="item-img" src="icon_blade.png" width="48" alt="blade icon"></li>
+      <li><span class="item-name">Warden's Shield</span><img class="item-img" src="icon_shield.png" width="48" alt="shield icon"></li>
+      <li><span class="item-name">Ember Potion</span><img class="item-img" src="icon_potion.png" width="48" alt="potion icon"></li>
+    </ul>
+  </section>
+
+  <section id="leaderboard">
+    <h2>Server Leaderboard</h2>
+    <p class="blurb">nth-child(odd/even) stripes the rows, a plain hover rule highlights whichever one the cursor is over.</p>
+    <table class="leaderboard">
+      <tr><th>Rank</th><th>Player</th><th>Score</th></tr>
+      <tr><td>1</td><td>ashfall_v</td><td>18,420</td></tr>
+      <tr><td>2</td><td>quietstorm</td><td>17,955</td></tr>
+      <tr><td>3</td><td>rk_owlbear</td><td>16,880</td></tr>
+      <tr><td>4</td><td>duskrunner</td><td>16,210</td></tr>
+      <tr><td>5</td><td>ninth_lantern</td><td>15,730</td></tr>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <p><small>&copy; 2026 Respawn Point. Made for URK24CS1021's Web Tech lab, not an actual gaming company.</small></p>
+</footer>
+
+</body>
+</html>

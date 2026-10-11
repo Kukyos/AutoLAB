@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Playground</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 850px; margin: 30px auto; padding: 20px; }
+  section { margin-bottom: 35px; }
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid black; padding: 8px; }
+  input, select { margin: 5px; }
+</style>
+</head>
+<body>
+
+<h1>HTML 1-2 Mark Playground</h1>
+
+<section>
+<h2>Ordered list</h2>
+<ol>
+  <li>Login</li>
+  <li>Enter password</li>
+  <li>Reset password</li>
+</ol>
+</section>
+
+<section>
+<h2>Unordered list</h2>
+<ul>
+  <li>Apple</li>
+  <li>Banana</li>
+  <li>Mango</li>
+</ul>
+</section>
+
+<section>
+<h2>Image</h2>
+<p>Change the src to an image that exists on your computer if you want to test a local image.</p>
+<img src="https://via.placeholder.com/250x120" alt="Ocean Sunset">
+</section>
+
+<section>
+<h2>Form controls</h2>
+<form>
+  <label>Full Name: <input type="text" name="fullName"></label><br>
+  <label>Email: <input type="email" name="email"></label><br>
+
+  <label>Department:
+    <select name="department">
+      <option>CSE</option>
+      <option>ECE</option>
+      <option>EEE</option>
+    </select>
+  </label><br>
+
+  <p>Gender: choose ONE</p>
+  <label><input type="radio" name="gender"> Male</label>
+  <label><input type="radio" name="gender"> Female</label>
+  <label><input type="radio" name="gender"> Other</label>
+
+  <p>Interests: choose MULTIPLE</p>
+  <label><input type="checkbox"> Web</label>
+  <label><input type="checkbox"> AI</label>
+  <label><input type="checkbox"> Game Development</label>
+
+  <p>Upload file:</p>
+  <input type="file"><br><br>
+
+  <button type="submit">Register</button>
+  <button type="reset">Clear</button>
+</form>
+</section>
+
+<section>
+<h2>Table</h2>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Theory</th>
+    <th>Practical</th>
+    <th>Result</th>
+  </tr>
+  <tr>
+    <td>Arjun</td>
+    <td>85</td>
+    <td>90</td>
+    <td>Pass</td>
+  </tr>
+  <tr>
+    <td>Divya</td>
+    <td>78</td>
+    <td>82</td>
+    <td>Pass</td>
+  </tr>
+  <tr>
+    <td colspan="4">Class Average: 83.25</td>
+  </tr>
+</table>
+</section>
+
+<section>
+<h2>Semantic HTML5 elements</h2>
+<header>header</header>
+<nav>nav</nav>
+<section>section</section>
+<article>article</article>
+<footer>footer</footer>
+</section>
+
+</body>
+</html>

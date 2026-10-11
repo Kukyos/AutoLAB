@@ -2,6 +2,9 @@
 
 Maintained across sessions. If I learn something or change the pipeline, update this file.
 
+## Layout (reorganised 11/10/2026)
+`scripts/` = builders (`build_dse_exN.py`, `dse_record.py`, `classroom_sync.py`) · `records/ExN/` = the finished record docx (what's shown to the teacher) · `output/ExN/` = working files (code as run, csv, screenshots, notebook, video_script.md, Kaggle cert PNGs) · `materials/` = teacher uploads; `materials/classroom/` is a full mirror of the Classroom course (+ `index.md` of every post, due date and link) written by `scripts/classroom_sync.py` · `assignments/` = non-numbered assignments. Run builders as `python Subjects/DSE/scripts/build_dse_exN.py`. Paths in the sections below that say `output/ExN/…docx` or bare `build_dse_exN.py` mean the new locations above.
+
 ## What this is
 Cleo's **DSE = Data Science Ecosystem Lab**, course **23CS2025**. **Python (NumPy / Pandas), not SQL.** Reg no **URK24CS1021**.
 
@@ -11,9 +14,9 @@ The teacher is thorough and assigns a **different scenario per student**. The `Q
 
 ## How to run
 ```
-python Subjects/DSE/build_dse_ex1.py
+python Subjects/DSE/scripts/build_dse_ex1.py
 ```
-→ `Subjects/DSE/output/Ex1/` = { qc_numpy.py, qc_pandas.py, screenshots/, Ex1_URK24CS1021.docx }
+→ `Subjects/DSE/output/Ex1/` = { qc_numpy.py, qc_pandas.py, screenshots/, notebook, video_script.md } and the record `Subjects/DSE/records/Ex1/Ex1_URK24CS1021.docx`
 
 Runs the real Python, captures real stdout, renders terminal screenshots (`labshot.render_terminal_shot`, style=cmd), builds the docx.
 
@@ -21,7 +24,7 @@ Runs the real Python, captures real stdout, renders terminal screenshots (`labsh
 Same philosophy as DBMS: **run for real, capture real output.** numpy 2.4.3 / pandas 2.3.3 are installed.
 
 ## Record layout — built FROM SCRATCH
-There is **no editable template** — only `Record Guidelines.pdf` (a spec). The builder constructs the docx to match it:
+There is **no editable template** — only `materials/classroom/EXPERIMENT - 1/RECORD - 1/Record Guidelines.pdf` (a spec). The builder constructs the docx to match it:
 - Header: `23CS2025 DATA SCIENCE ECOSYSTEM LAB` (left) + reg no (right), bottom border.
 - Table: `Ex. No. N | <TITLE>` / `Date of Exercise | <date>`.
 - **Aim** (fixed text from guideline) · **Description** · **Question:** (full assigned scenario) · **Sample Code:** + **Sample Output:** (repeat per part) · **CODE EXPLANATION LINK:** · **Preparation course certificate** · **RESULT** (fixed sentence).
@@ -57,7 +60,7 @@ Teacher requires **every notebook code cell to print the reg no (URK24CS1021) be
 
 ## Ex-3 specifics (`build_dse_ex3.py` → `output/Ex3/`)
 - **Data Visualization**, matplotlib 3.11.1 + seaborn 0.13.2 (installed 06/08/2026). Title `DATA VISUALIZATION`, aim adapted from the guideline's ("…using Matplotlib and Seaborn" instead of Numpy/Pandas) since the PDF's aim is written for Ex-1.
-- Question doc is `URK23CS1021_EXP3.docx` — **note the reg no reads URK23CS1021, not Cleo's URK24CS1021.** Flagged to Cleo; the plot list is almost certainly common to everyone and only the dataset varies, so the dataset lives in one `CSV` string constant → `output/Ex3/admissions.csv`. If it's the wrong student's dataset, edit that constant and re-run, nothing else changes.
+- Question doc is `materials/URK23CS1021_EXP3.docx` — **note the reg no reads URK23CS1021, not Cleo's URK24CS1021.** Flagged to Cleo; the plot list is almost certainly common to everyone and only the dataset varies, so the dataset lives in one `CSV` string constant → `output/Ex3/admissions.csv`. If it's the wrong student's dataset, edit that constant and re-run, nothing else changes.
 - `matplotlib.use("Agg")` at module top — headless build. `plt.show()` is a no-op under Agg (it warns on stderr, harmless) so the figure is still alive afterwards; `_grab_figure()` saves `plt.gcf()` then `plt.close("all")`.
 - **Sample Output is the plot PNG, not a terminal shot.** A section can emit both: if it printed anything it gets a terminal shot *and* its plot (`q04a`/`q04b`). Only the load section and the bar-plot's rate table print.
 - `_run_cell` needed the same fix for the notebook — a plot cell has no stdout and no trailing expression, so without a `display_data` grab every plot cell would look like it was never run. **Copy that into any future builder that plots.**

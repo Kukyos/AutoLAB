@@ -12,11 +12,21 @@ built for ~500 other students to self-serve). Different audience, different
 code path: `Subjects/` is a personal pipeline, skip the site user flow
 entirely when working here.
 
-Reg no is always **URK24CS1021**. Each subject gets its own folder:
+Reg no is always **URK24CS1021**. Every subject folder has the same shape, so
+"what do I show the teacher" and "what does Claude use" are always the same answer:
 ```
 Subjects/
-  PIPELINE.md          — this file
-  DSE/PIPELINE.md, DBMS/PIPELINE.md, ...  — one per subject
+  PIPELINE.md              — this file
+  client_secret*.json, token.json   — Google OAuth for classroom_sync (gitignored; never commit)
+  <Subject>/               — DSE, DBMS, WebTech
+    PIPELINE.md            — per-subject notes
+    records/ExN/           — SHOW THE TEACHER: the finished record docx (+pdf for DBMS)
+    output/ExN/            — working files: code as run, data, screenshots, notebook, video cue-cards
+    scripts/               — Claude's builders (build_*.py, dse_record.py, dbms_lab.py, classroom_sync.py)
+    materials/             — teacher uploads: templates, question banks, datasets, slides
+                             (DSE: materials/classroom/ = full mirror of the Classroom course)
+    assignments/           — standalone non-numbered deliverables (DSE, WebTech)
+    archive/, others/      — superseded builds; work done for other students (DBMS)
 ```
 
 ## The shared philosophy: run for real, capture real output
@@ -49,14 +59,29 @@ AI-written and must contain no hallucinated output. Concretely:
   the record from scratch with matching layout conventions: header
   (course + reg no, bottom border), footer (`EX-N: TITLE`), Ex.No/Date table,
   Aim/Description/Question, then one Sample Code + Sample Output pair per
-  question, RESULT. See `DSE/build_dse_ex1.py` or
-  `DBMS/dbms_lab.py:build_docx_scratch` for the concrete pattern to copy.
+  question, RESULT. See `DSE/scripts/build_dse_ex1.py` or
+  `DBMS/scripts/dbms_lab.py:build_docx_scratch` for the concrete pattern to copy.
+
+## Classroom mirror (`DSE/scripts/classroom_sync.py`)
+`python Subjects/DSE/scripts/classroom_sync.py [courseId]` pulls a whole Google
+Classroom course into `<Subject>/materials/classroom/<topic>/<post>/` and writes
+`index.md` (every post: due date, description, links, YouTube). Uses the Classroom
++ Drive read-only APIs via OAuth: `Subjects/client_secret*.json` (Desktop-app
+client from Cleo's college Cloud project) and `Subjects/token.json` (created on
+first run, browser consent). Re-runnable, skips files it already has. Default
+course id is the DSE lab (`855460957674` = base64-decoded id in the Classroom
+URL); pass another id for DBMS/WebTech. `.mp4`s in the mirror are gitignored.
+Needs `pip install google-api-python-client google-auth-oauthlib`. Google
+reshuffles the granted scope list, so the script sets
+`OAUTHLIB_RELAX_TOKEN_SCOPE=1` (otherwise oauthlib raises "Scope has changed").
 
 ## Output layout convention
-Every subject writes to `<Subject>/output/Ex<N>/`, always containing at
-least: the real script/SQL as run, `screenshots/` (real PNGs), and the
-filled `.docx`. Some subjects add more (DSE also emits a Jupyter notebook +
-a video cue-card script for the code-explanation requirement).
+Builders write working files to `<Subject>/output/Ex<N>/` — the real
+script/SQL as run, `screenshots/` (real PNGs), data, and for DSE a Jupyter
+notebook + video cue-card script — and the **finished record docx to
+`<Subject>/records/Ex<N>/`**. Builders locate themselves with
+`HERE = Path(__file__).resolve().parents[1]` and the repo root with
+`parents[3]` (they live in `<Subject>/scripts/`).
 
 `labshot.py` renders terminal/editor-style PNGs for subjects whose "real
 output" is stdout (DSE, DBMS). WebTech's real output is a browser render, so
@@ -65,13 +90,13 @@ and capturing it — same "real capture, not synthesized" principle, different
 tool for the job. Don't reach for `labshot` there.
 
 ## Folder hygiene
-Keep each subject's root to just its `PIPELINE.md` + active builder
-script(s) + `output/`. Put teacher-provided originals (templates, question
-PDFs/PPTX) in a `materials/` subfolder, and superseded/deprecated stuff in
-an `archive/` subfolder — don't leave deprecated docx/scripts loose at the
-subject root where they're easy to mistake for the current output (this is
-what DBMS looked like before the 24/07/2026 cleanup; DSE never had the
-problem since it started clean).
+Subject root = `PIPELINE.md` + the folders in the tree above, nothing loose.
+Teacher-provided originals go in `materials/` (never duplicate a file that is
+already in `materials/classroom/` — dedupe by hash); superseded stuff in
+`archive/`. Delete `~$*` Word lock files, `.ipynb_checkpoints`, `__pycache__`.
+After moving any script, re-check its `HERE`/`REPO` constants (import every
+script and assert `HERE/"materials"` and `REPO/"labshot.py"` exist) — do NOT
+rebuild to test, a rebuild overwrites hand-edited records.
 
 ## Per-subject specifics
 Don't duplicate these here — read the subject's own file:
