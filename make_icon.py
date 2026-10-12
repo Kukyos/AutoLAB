@@ -1,9 +1,9 @@
-"""Generate static/icon.ico — a B&W 'A' mark for the window + taskbar."""
+"""Generate autolab/static/icon.ico — a B&W 'A' mark for the window + taskbar."""
 
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-OUT = Path(__file__).parent / "static" / "icon.ico"
+OUT = Path(__file__).parent / "autolab" / "static" / "icon.ico"
 SIZES = [256, 128, 64, 48, 32, 16]
 
 

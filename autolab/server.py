@@ -33,18 +33,18 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-import billing
-import pdfedit
-from autolab import (
+from . import __version__, billing
+from . import pdfedit
+from .docxedit import (
     apply_block_edits_bytes,
     extract_blocks,
     replace_in_doc,
     replace_in_docx_bytes,
 )
-from assemble import add_solved_question_bytes
-from gemini import gemini_call, patch_docx_images, strip_fences
-from labshot import render_code_shot, render_terminal_shot
-from runner import LANGS, MissingTool, run_pair, run_single, tool_status
+from .assemble import add_solved_question_bytes
+from .gemini import gemini_call, patch_docx_images, strip_fences
+from .labshot import render_code_shot, render_terminal_shot
+from .runner import LANGS, MissingTool, run_pair, run_single, tool_status
 
 
 def _resource_root() -> Path:
@@ -350,7 +350,7 @@ async def capabilities() -> dict:
     """Tell the frontend what the running backend can do."""
     return {
         "desktop": DESKTOP_MODE,
-        "version": "1.0",
+        "version": __version__,
         "billing": billing.enabled(),
         # ponytail: no compilers/subprocess sandbox on Vercel — solve is local-only
         "solve": not os.environ.get("VERCEL"),
@@ -874,7 +874,7 @@ async def fill_template(body: TemplateFill) -> Response:
     if body.template != "neutral":
         raise HTTPException(404, f"Unknown template: {body.template}")
     # Build the empty template to a temp file, then fill placeholders in-memory.
-    from make_template import build_template
+    from .make_template import build_template
 
     with tempfile.TemporaryDirectory() as td:
         empty = Path(td) / "empty.docx"

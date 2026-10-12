@@ -35,12 +35,15 @@ _FONT_CANDIDATES: list[tuple[str, str]] = [
     ("C:/Windows/Fonts/cour.ttf", "C:/Windows/Fonts/courbd.ttf"),
     ("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
      "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"),
+    ("/usr/share/fonts/TTF/DejaVuSansMono.ttf",          # Arch and derivatives
+     "/usr/share/fonts/TTF/DejaVuSansMono-Bold.ttf"),
     ("/System/Library/Fonts/Menlo.ttc", "/System/Library/Fonts/Menlo.ttc"),
 ]
 
 _UI_FONT_CANDIDATES: list[str] = [
     "C:/Windows/Fonts/segoeui.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "/usr/share/fonts/TTF/DejaVuSans.ttf",
 ]
 
 

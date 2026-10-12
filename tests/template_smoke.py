@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 from pathlib import Path
 from docx import Document
 
-from autolab import iter_all_paragraphs, replace_in_docx
+from autolab.docxedit import iter_all_paragraphs, replace_in_docx
 
 TEMPLATE = ROOT / "template_empty.docx"
 (ROOT / "tests" / "out").mkdir(exist_ok=True)

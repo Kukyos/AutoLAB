@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autolab"
+dynamic = ["version"]
+description = "Run lab code for real, render the screenshots, assemble the record .docx -- a toolkit for AI coding agents, plus a desktop app."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "python-docx",
+    "pymupdf",
+    "pillow",
+    "pygments",
+    # web UI / desktop app backend
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+desktop = ["pywebview"]
+
+[project.scripts]
+autolab = "autolab.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Kukyos/AutoLAB"
+
+[tool.setuptools]
+packages = ["autolab"]
+
+[tool.setuptools.dynamic]
+version = { attr = "autolab.__version__" }
+
+[tool.setuptools.package-data]
+autolab = ["static/**/*", "agent/*"]

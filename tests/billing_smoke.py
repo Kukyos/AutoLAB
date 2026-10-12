@@ -11,7 +11,7 @@ import hashlib
 import hmac
 import json
 
-import billing
+from autolab import billing
 
 
 def main() -> None:

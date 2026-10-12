@@ -8,7 +8,7 @@ Output:  dist/AutoLAB.exe
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 datas = [
-    ("static", "static"),
+    ("autolab/static", "static"),
 ]
 # python-docx ships with XML templates it loads at runtime
 datas += collect_data_files("docx")
@@ -22,8 +22,8 @@ hiddenimports = [
     "clr",
     # pydantic v2 occasionally needs a nudge under PyInstaller
     "pydantic.deprecated.decorator",
-    # lazily imported by server.py
-    "make_template",
+    # the app package, including lazily imported modules (make_template)
+    *collect_submodules("autolab"),
 ]
 
 a = Analysis(
@@ -70,5 +70,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon="static/icon.ico",
+    icon="autolab/static/icon.ico",
 )

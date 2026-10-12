@@ -8,9 +8,53 @@ record.
 It also does find & replace across a whole record (including inside the
 screenshots), template filling, and in-place PDF text editing.
 
-Free and open source (MIT). No account needed.
+Free and open source (MIT). No account needed. Two ways to use it:
 
-## Get started (Windows)
+- **With an AI coding agent** (Claude Code, Codex, ...) if you have a
+  subscription: the agent writes the code, and the `autolab` command runs it
+  and builds the record. No Gemini key needed.
+- **The desktop app** for Windows, with Gemini (free key) writing the code.
+
+## With an AI agent (Claude Code, Codex)
+
+Install the command, which needs Python 3.10+ and
+[uv](https://docs.astral.sh/uv/) (or pipx):
+
+```
+uv tool install git+https://github.com/Kukyos/AutoLAB
+autolab doctor        # shows which languages / database clients it can run
+```
+
+Set up a folder for your labs and teach your agent the workflow:
+
+```
+autolab init MyLabs --subject DBMS --subject CN --register-number URK24CS1021
+autolab skill         # Claude Code: installs ~/.claude/skills/autolab/SKILL.md
+```
+
+`init` writes `AGENTS.md` (read by Codex and other agents) and a `CLAUDE.md`
+that imports it, plus a `materials/ output/ records/ scripts/` layout for
+each subject. Drop the teacher's files into `materials/`, open your agent in
+that folder, and ask it for the record, e.g. *"do DBMS Ex 3 from the question
+bank in materials"*.
+
+What the agent gets (`autolab guide` prints the full guide):
+
+| Command | Does |
+|---------|------|
+| `autolab run q1.py --shot q1.png` | compile + run (python/c/cpp/java), terminal screenshot of the real output |
+| `autolab run-pair server.py client.py` | socket labs: server and client together |
+| `autolab notebook ex5.py --out ex5.ipynb --shots dir/` | runs `# %%` cells into a real notebook, with per-cell screenshots and plots |
+| `autolab sql ex2.sql --engine psql\|sqlite --db ...` | runs SQL for real and draws the console transcript for each question |
+| `autolab record new spec.json` / `record add` | build a record from scratch, or append to the teacher's template |
+| `autolab replace` / `blocks` / `edit` / `pdf edit` | fix up existing .docx / .pdf files |
+
+Every command prints JSON, and a failed run is never turned into a
+screenshot. The guide tells the agent never to write output by hand.
+
+Update with `uv tool upgrade autolab`, remove with `uv tool uninstall autolab`.
+
+## Desktop app (Windows)
 
 1. **Download** `AutoLAB.exe` from the
    [latest release](https://github.com/Kukyos/AutoLAB/releases/latest) and run
@@ -56,14 +100,14 @@ Restart AutoLAB after installing so it picks up the new PATH.
 
 ```
 python -m venv .venv
-.venv/bin/pip install -r requirements.txt     # Windows: .venv\Scripts\pip
+.venv/bin/pip install -e ".[desktop]"         # Windows: .venv\Scripts\pip
 
-.venv/bin/python desktop.py                   # desktop app
-.venv/bin/python -m uvicorn server:app --port 8000   # web mode, open localhost:8000
+.venv/bin/autolab app                         # desktop app
+.venv/bin/autolab serve                       # web UI on localhost:8000
 ```
 
-Tests: `python tests/run_all.py` (smoke tests for the solve pipeline, the HTTP
-API, templates, Gemini helpers, billing and the PDF editor).
+Tests: `python tests/run_all.py` (smoke tests for the CLI, the solve pipeline,
+the HTTP API, templates, Gemini helpers, billing and the PDF editor).
 
 Building the exe: `pyinstaller AutoLAB.spec --clean --noconfirm` on Windows,
 which gives you `dist/AutoLAB.exe`. CI does this on every push and attaches it
@@ -71,14 +115,21 @@ to the release when a `v*` tag is pushed (`.github/workflows/build.yml`).
 
 ## What's inside
 
+Everything lives in the `autolab/` package:
+
 | File | Does |
 |------|------|
+| `cli.py` | the `autolab` command (JSON in/out, for agents and people) |
+| `record.py` | builds a record .docx from scratch from a JSON spec |
+| `notebook.py` | runs a `# %%` script into an .ipynb with real outputs |
+| `sql.py` | runs SQL through psql/sqlite3 and renders the transcript |
+| `agent/GUIDE.md` | the agent guide (becomes `AGENTS.md` and the Claude skill) |
 | `desktop.py` | desktop launcher: in-process server + native window (pywebview) |
 | `server.py` | FastAPI backend, all `/api/*` endpoints |
 | `runner.py` | runs code (python/c/cpp/java) with timeouts; `run_pair` for server+client labs; checks the compilers are installed |
 | `labshot.py` | draws the screenshots: Windows terminal and VS Code windows |
 | `assemble.py` | writes a solved question (heading, code, images) into a docx |
-| `autolab.py` | docx find/replace and block extraction/editing |
+| `docxedit.py` | docx find/replace and block extraction/editing |
 | `pdfedit.py` | PDF in-place text editing with automatic font finding |
 | `gemini.py` | Gemini API client and in-place screenshot patching |
 | `make_template.py` | builds the neutral record template |

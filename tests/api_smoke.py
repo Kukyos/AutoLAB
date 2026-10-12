@@ -29,8 +29,8 @@ os.environ.pop("GEMINI_API_KEY", None)
 import uvicorn
 from docx import Document
 
-import runner
-import server
+from autolab import runner
+from autolab import server
 
 DOCX = (ROOT / "template_empty.docx").read_bytes()
 
@@ -71,7 +71,7 @@ def call(method, path, *, json_body=None, fields=None, file=None):
 
 
 def doc_text(blob: bytes) -> str:
-    from autolab import iter_all_paragraphs  # body + tables + headers/footers
+    from autolab.docxedit import iter_all_paragraphs  # body + tables + headers/footers
     return "\n".join(p.text for p in iter_all_paragraphs(Document(io.BytesIO(blob))))
 
 

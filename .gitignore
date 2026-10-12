@@ -12,3 +12,4 @@ _preview.py
 Subjects/
 .venv/
 tests/out/
+*.egg-info/

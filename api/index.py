@@ -5,4 +5,4 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from server import app  # noqa: E402, F401
+from autolab.server import app  # noqa: E402, F401

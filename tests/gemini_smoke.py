@@ -12,7 +12,7 @@ import zipfile
 
 from PIL import Image
 
-import gemini
+from autolab import gemini
 
 
 def _docx_with_image() -> bytes:

@@ -1,46 +1,63 @@
-# Tests + Windows build. On a v* tag it also publishes AutoLAB.exe to the
-# GitHub Release for that tag. The .exe has to be built on Windows --
-# PyInstaller can't cross-compile.
+# Tests on Linux + Windows, then the Windows desktop build. On a v* tag the
+# .exe is attached to a draft GitHub Release. The .exe has to be built on
+# Windows -- PyInstaller can't cross-compile.
 name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, agent-cli]
     tags: ["v*"]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: write
 
+env:
+  PYTHONUTF8: "1"   # test output has em dashes; a cp1252 console would choke
+
 jobs:
-  windows:
-    runs-on: windows-latest
-    env:
-      PYTHONUTF8: "1"   # test output has em dashes; cp1252 console would choke
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Install
-        run: pip install -r requirements.txt pyinstaller
-
-      - name: Test
+      - name: Install (non-editable, as users get it)
+        run: pip install .
+      - name: The installed CLI works outside the repo
+        working-directory: ${{ runner.temp }}
+        run: |
+          autolab --version
+          autolab doctor
+          autolab guide
+      - name: Tests
         run: python tests/run_all.py
 
+  windows-exe:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install ".[desktop]" pyinstaller
       - name: Build AutoLAB.exe
         run: pyinstaller AutoLAB.spec --clean --noconfirm
-
       - uses: actions/upload-artifact@v4
         with:
           name: AutoLAB-windows
           path: dist/AutoLAB.exe
-
-      - name: Publish release
+      - name: Attach to draft release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: dist/AutoLAB.exe
-          draft: true   # notes get written by hand, then it's published
+          draft: true   # notes are written by hand, then it's published

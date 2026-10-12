@@ -16,10 +16,10 @@ import shutil
 
 from docx import Document
 
-from autolab import iter_all_paragraphs, replace_in_docx
-from assemble import add_solved_question
-from labshot import render_code_shot, render_terminal_shot
-from runner import run_pair, run_single
+from autolab.docxedit import iter_all_paragraphs, replace_in_docx
+from autolab.assemble import add_solved_question
+from autolab.labshot import render_code_shot, render_terminal_shot
+from autolab.runner import run_pair, run_single
 
 HERE = ROOT / "tests" / "out"
 HERE.mkdir(exist_ok=True)
