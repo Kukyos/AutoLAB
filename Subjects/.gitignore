@@ -1,6 +1,0 @@
-
-client_secret*.json
-token.json
-
-# classroom mirror videos: re-fetchable with DSE/scripts/classroom_sync.py
-DSE/materials/classroom/**/*.mp4

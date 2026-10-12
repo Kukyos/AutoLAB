@@ -9,3 +9,5 @@ _preview.py
 .claude/
 .ipynb_checkpoints/
 ~$*
+Subjects/
+.venv/
