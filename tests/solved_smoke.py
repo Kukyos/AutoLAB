@@ -4,6 +4,13 @@ Q1: bit stuffing (single program)         — the classic CN experiment
 Q2: TCP echo (server/client pair mode)    — the blocking-server case
 """
 
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+
 from pathlib import Path
 import shutil
 
@@ -14,8 +21,9 @@ from assemble import add_solved_question
 from labshot import render_code_shot, render_terminal_shot
 from runner import run_pair, run_single
 
-HERE = Path(__file__).parent
-TEMPLATE = HERE / "template_empty.docx"
+HERE = ROOT / "tests" / "out"
+HERE.mkdir(exist_ok=True)
+TEMPLATE = ROOT / "template_empty.docx"
 OUT = HERE / "EX_solved_test.docx"
 URK = "URK24CS1021"
 

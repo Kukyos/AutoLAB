@@ -78,6 +78,12 @@ async function loadProfile() {
     return;
   }
   renderProfile();
+  // Prefill find & replace with your own register number.
+  if (!$("#rep-find").value) $("#rep-find").value = profile.default_urk || "";
+  // First run: nothing AI works until a key is saved, so say where it goes.
+  if (!profile.ai_key_set) {
+    toast("Add your free Gemini API key in Profile to use the AI features.");
+  }
 }
 
 function renderProfile() {

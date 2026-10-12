@@ -2,13 +2,21 @@
 can fill its placeholders end-to-end.
 """
 
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+
 from pathlib import Path
 from docx import Document
 
 from autolab import iter_all_paragraphs, replace_in_docx
 
-TEMPLATE = Path(__file__).parent / "template_empty.docx"
-FILLED = Path(__file__).parent / "template_filled_test.docx"
+TEMPLATE = ROOT / "template_empty.docx"
+(ROOT / "tests" / "out").mkdir(exist_ok=True)
+FILLED = ROOT / "tests" / "out" / "template_filled_test.docx"
 
 FIELDS = {
     "{{COURSE_TITLE}}":    "Computer Networks Lab",

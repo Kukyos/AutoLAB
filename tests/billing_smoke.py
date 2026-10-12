@@ -1,5 +1,12 @@
 """Offline check for billing.py — signatures, auth parsing, wallet calls (mocked)."""
 
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+
 import hashlib
 import hmac
 import json

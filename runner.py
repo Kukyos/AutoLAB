@@ -18,6 +18,7 @@ surface it instead of pasting a broken record.
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -28,6 +29,50 @@ from pathlib import Path
 LANGS = ("python", "c", "cpp", "java")
 
 _EXT = {"python": ".py", "c": ".c", "cpp": ".cpp", "java": ".java"}
+
+# Programs each language needs on PATH. Python is whatever runs AutoLAB itself
+# (the frozen exe has none, so it still has to be installed for real).
+_TOOLS = {"python": ["python"], "c": ["gcc"], "cpp": ["g++"], "java": ["javac", "java"]}
+
+_INSTALL_HINT = {
+    "python": "Install Python from python.org (tick \"Add python.exe to PATH\").",
+    "c": "Install a C compiler, e.g. MinGW-w64 via winlibs.com or MSYS2, and add its bin folder to PATH.",
+    "cpp": "Install a C++ compiler, e.g. MinGW-w64 via winlibs.com or MSYS2, and add its bin folder to PATH.",
+    "java": "Install a JDK (e.g. Eclipse Temurin from adoptium.net) so javac and java are on PATH.",
+}
+
+
+class MissingTool(RuntimeError):
+    """A compiler/interpreter the language needs isn't installed."""
+
+
+def _python_argv() -> list[str] | None:
+    # Frozen (PyInstaller) sys.executable is AutoLAB.exe, not a Python.
+    if not getattr(sys, "frozen", False):
+        return [sys.executable]
+    for name in ("python", "python3", "py"):
+        if shutil.which(name):
+            return [name]
+    return None
+
+
+def missing_tools(language: str) -> list[str]:
+    """Names of required programs that aren't on PATH (empty = ready)."""
+    if language == "python":
+        return [] if _python_argv() else ["python"]
+    return [t for t in _TOOLS[language] if not shutil.which(t)]
+
+
+def tool_status() -> dict[str, bool]:
+    """language -> whether it can run on this machine right now."""
+    return {lang: not missing_tools(lang) for lang in LANGS}
+
+
+def require_tools(language: str) -> None:
+    missing = missing_tools(language)
+    if missing:
+        raise MissingTool(f"Can't run {language}: {', '.join(missing)} not found. "
+                          + _INSTALL_HINT[language])
 
 
 @dataclass
@@ -60,7 +105,7 @@ def _compile(language: str, src: Path, workdir: Path) -> tuple[list[str] | None,
     """Return (run_argv, None) on success or (None, error RunResult) on failure."""
     stem = src.stem
     if language == "python":
-        return [sys.executable, str(src)], None
+        return [*(_python_argv() or ["python"]), str(src)], None
     if language in ("c", "cpp"):
         compiler = "gcc" if language == "c" else "g++"
         exe = workdir / (stem + (".exe" if sys.platform == "win32" else ""))
@@ -94,6 +139,7 @@ def run_single(
     """Compile if needed, run to completion, capture merged output."""
     if language not in LANGS:
         raise ValueError(f"language must be one of {LANGS}")
+    require_tools(language)
     src_name = filename or f"program{_EXT[language]}"
     if language == "java":
         src_name = _java_class_name(code) + ".java"
@@ -157,6 +203,7 @@ def run_pair(
     """
     if language not in LANGS:
         raise ValueError(f"language must be one of {LANGS}")
+    require_tools(language)
     if language == "java":
         server_filename = _java_class_name(server_code) + ".java"
         client_filename = _java_class_name(client_code) + ".java"

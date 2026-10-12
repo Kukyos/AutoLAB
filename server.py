@@ -44,7 +44,7 @@ from autolab import (
 from assemble import add_solved_question_bytes
 from gemini import gemini_call, patch_docx_images, strip_fences
 from labshot import render_code_shot, render_terminal_shot
-from runner import LANGS, run_pair, run_single
+from runner import LANGS, MissingTool, run_pair, run_single, tool_status
 
 
 def _resource_root() -> Path:
@@ -350,11 +350,13 @@ async def capabilities() -> dict:
     """Tell the frontend what the running backend can do."""
     return {
         "desktop": DESKTOP_MODE,
-        "version": "0.8",
+        "version": "1.0",
         "billing": billing.enabled(),
         # ponytail: no compilers/subprocess sandbox on Vercel — solve is local-only
         "solve": not os.environ.get("VERCEL"),
         "languages": list(LANGS),
+        # which of those have their compiler/interpreter installed here
+        "tools": tool_status() if not os.environ.get("VERCEL") else {},
         "data_dir": str(DATA_DIR) if DESKTOP_MODE else None,
         "generated_dir": str(GENERATED_DIR) if DESKTOP_MODE else None,
     }
@@ -1151,6 +1153,8 @@ async def doc_add_solved_question(
             record_code = code
     except HTTPException:
         raise
+    except MissingTool as e:
+        raise HTTPException(400, str(e)) from e
     except Exception as e:
         raise HTTPException(500, f"Run/render failed: {e}") from e
 

@@ -11,3 +11,4 @@ _preview.py
 ~$*
 Subjects/
 .venv/
+tests/out/

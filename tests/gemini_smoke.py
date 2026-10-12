@@ -1,5 +1,12 @@
 """Offline check for gemini.py — mocks the API, verifies docx image swap."""
 
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+
 import io
 import zipfile
 

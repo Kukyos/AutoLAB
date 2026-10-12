@@ -302,6 +302,14 @@ window.__autolab_show_organizer = showOrganizer;
 (async () => {
   try { state.capabilities = await api.capabilities(); } catch {}
 
+  // Grey out languages whose compiler isn't installed on this machine.
+  for (const opt of document.querySelectorAll("#sq-lang option")) {
+    if (state.capabilities.tools?.[opt.value] === false) {
+      opt.disabled = true;
+      opt.textContent += " (not installed)";
+    }
+  }
+
   // Billing/account: web-only — desktop is the bring-your-own-key world.
   if (!state.capabilities.desktop) {
     try {

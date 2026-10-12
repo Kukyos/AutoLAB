@@ -307,6 +307,20 @@ def apply_edits(doc: pymupdf.Document, edits: dict[str, str]) -> list[dict]:
     return report
 
 
+def _demo_fonts() -> tuple[str, str]:
+    """Two different TrueType files for the self-check, from whatever OS runs it."""
+    pairs = [
+        (r"C:\Windows\Fonts\verdana.ttf", r"C:\Windows\Fonts\georgia.ttf"),
+        ("/usr/share/fonts/TTF/DejaVuSans.ttf", "/usr/share/fonts/TTF/DejaVuSerif.ttf"),
+        ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+         "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"),
+    ]
+    for a, b in pairs:
+        if os.path.exists(a) and os.path.exists(b):
+            return a, b
+    raise SystemExit("self-check needs Verdana+Georgia or DejaVu Sans+Serif installed")
+
+
 def demo() -> None:
     """Self-check: edit text in a PDF, prove the old text is gone and layout held."""
     doc = pymupdf.open()
@@ -346,9 +360,10 @@ def demo() -> None:
     # The two sides spell it differently ("Verdana" vs "Verdana Regular"), which
     # is exactly what naive name matching gets wrong.
     assert _norm("ABCDEF+Verdana Regular") == _norm("Verdana") == "verdana"
+    font_a, font_b = _demo_fonts()
     emb = pymupdf.open()
     epage = emb.new_page()
-    epage.insert_font(fontname="verd", fontfile=r"C:\Windows\Fonts\verdana.ttf")
+    epage.insert_font(fontname="verd", fontfile=font_a)
     epage.insert_text((72, 100), "Hello URK24CS1021", fontname="verd", fontsize=13)
     # A second line in the same font, left untouched: redacting the only text
     # that used a font drops the resource, and then there is nothing to reuse.
@@ -359,7 +374,7 @@ def demo() -> None:
     assert erep[0]["font_source"] == "original", erep
     out_span = [s for s in read_spans(pymupdf.open("pdf", emb.tobytes()))
                 if "URK" in s.text][0]
-    assert "Verdana" in out_span.font, out_span.font
+    assert _norm(out_span.font) == _norm(esp.font), (out_span.font, esp.font)
     # Edited text must encode spaces the same way the source document did.
     # Re-embedding the font instead of reusing the page's resource gives the
     # copy a fresh ToUnicode map where a space becomes U+00A0 -- visually
@@ -383,16 +398,18 @@ def demo() -> None:
     # resource and draw in the wrong typeface, while still reporting its own.
     two = pymupdf.open()
     tp = two.new_page()
-    tp.insert_font(fontname="fa", fontfile=r"C:\Windows\Fonts\verdana.ttf")
-    tp.insert_font(fontname="fb", fontfile=r"C:\Windows\Fonts\georgia.ttf")
+    tp.insert_font(fontname="fa", fontfile=font_a)
+    tp.insert_font(fontname="fb", fontfile=font_b)
     tp.insert_text((72, 100), "alpha one", fontname="fa", fontsize=12)
     tp.insert_text((72, 200), "beta two", fontname="fb", fontsize=12)
     two = pymupdf.open("pdf", two.tobytes())
     ids = {s.text.split()[0]: s.id for s in read_spans(two)}
+    before = {s.text.split()[0]: _norm(s.font) for s in read_spans(two)}
+    assert before["alpha"] != before["beta"], before
     apply_edits(two, {ids["alpha"]: "alpha edited", ids["beta"]: "beta edited"})
     got = {s.text.split()[0]: s.font for s in read_spans(pymupdf.open("pdf", two.tobytes()))}
-    assert "Verdana" in got["alpha"], got
-    assert "Georgia" in got["beta"], got
+    assert _norm(got["alpha"]) == before["alpha"], (got, before)
+    assert _norm(got["beta"]) == before["beta"], (got, before)
 
     # Editing a span must not take its same-line neighbour with it: redaction
     # removes everything intersecting the rect, and headings like
