@@ -1,107 +1,110 @@
 # AutoLAB
 
-Auto-fills college lab record `.docx` templates: AI generates the code, AutoLAB
-**actually runs it**, renders terminal/VS Code "screenshots" from the real
-output, and inserts everything (heading, code text, images) into the record.
+Auto-fills college lab record `.docx` files. AI writes the code, AutoLAB
+**actually runs it** on your machine, draws terminal / VS Code "screenshots"
+from the real output, and inserts everything (heading, code, images) into the
+record.
 
-## PDF editor
+It also does find & replace across a whole record (including inside the
+screenshots), template filling, and in-place PDF text editing.
 
-Open a `.pdf` and click any line to retype it. The text goes back on the page
-at the same baseline in the same font, so nothing re-flows and the layout is
-untouched — the old glyphs are redacted away and the new ones drawn in place.
+Free and open source (MIT). No account needed.
 
-The font is found automatically, best option first: reuse the page's own font
-resource, else re-embed a copy of it, else a Base-14 lookalike matched to the
-span's style, else the bundled CJK face. A rung is only skipped if it can't
-draw every character typed, so a replacement never silently loses glyphs.
-Anything lossy (substituted font, text shrunk to fit, undrawable characters)
-is reported in the panel rather than left for you to find in the download.
+## Get started (Windows)
 
-Nothing is stored server-side: the file is re-sent on save and the edited PDF
-comes straight back as a download.
+1. **Download** `AutoLAB.exe` from the
+   [latest release](https://github.com/Kukyos/AutoLAB/releases/latest) and run
+   it. Nothing is installed. Windows SmartScreen may warn because the exe
+   isn't signed: click *More info → Run anyway*.
+2. **Add a free Gemini API key.** Get one at
+   [aistudio.google.com](https://aistudio.google.com) (Google account, no
+   card), then in AutoLAB go to **Profile → Gemini API key → Save**. The key
+   stays on your PC, in `%APPDATA%\AutoLAB\profile.json`.
+3. **Save your register number** in Profile, so it gets filled in for you.
 
-Hosted, the editor takes PDFs up to 30 pages — `/api/pdf/parse` returns every
-page as a preview image in one response (~0.13 MB/page) and Vercel caps a
-function response at 4.5 MB. Locally or on the desktop build there is no such
-cap: raise `AUTOLAB_PDF_MAX_PAGES`.
+### Running code needs the language installed
 
-**Not yet:** editing scanned PDFs (no text layer to edit — it says so),
-reordering/merging pages, images, and structure cleaning.
+AutoLAB runs the program for real, so the compiler has to be on your PC.
+Languages that aren't installed are greyed out in the solve form.
 
-Also rebrands a finished record in one shot: find & replace swaps a register
-number everywhere in the text **and inside the screenshots** (Gemini vision
-finds it, the Gemini image model rewrites it in place — layout untouched).
+| Language | Install | Check it works (in a new terminal) |
+|----------|---------|-------------------------------------|
+| Python | [python.org](https://www.python.org/downloads/), tick **"Add python.exe to PATH"** | `python --version` |
+| C / C++ | MinGW-w64 from [winlibs.com](https://winlibs.com) or [MSYS2](https://www.msys2.org), add its `bin` folder to PATH | `gcc --version` |
+| Java | A JDK, e.g. [Temurin](https://adoptium.net) | `javac -version` |
 
-## AI key (free)
+Restart AutoLAB after installing so it picks up the new PATH.
 
-All AI features use the Gemini API. Get a free key at
-[aistudio.google.com](https://aistudio.google.com) (Google account, no card):
+## Features
 
-- **Desktop app:** Profile → Gemini API key → Save.
-- **Web / Vercel:** paste the key into the tool form when a feature asks for it.
+- **Solve a question:** paste the question → Gemini writes the code → AutoLAB
+  compiles and runs it (with timeouts, and server + client pairs for networking
+  labs) → renders a Windows terminal and optional VS Code screenshot → appends
+  it to the record. A failed run never gets pasted in.
+- **Find & replace:** swap a register number everywhere in the text, and
+  optionally **inside the screenshots** too (Gemini finds it in the image and
+  rewrites it in place).
+- **Templates:** generate a blank record with your course, register number,
+  experiment number and date filled in.
+- **Document editor:** open a `.docx`, edit blocks, add questions.
+- **PDF editor:** click any line of a PDF and retype it. The text goes back at
+  the same baseline in the same font (reused, re-embedded, or the closest
+  match, and it tells you when it had to substitute). Scanned PDFs have no text
+  layer and can't be edited.
 
-## Run
+## Run from source (any OS)
 
 ```
-pip install -r requirements.txt
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt     # Windows: .venv\Scripts\pip
 
-python -m uvicorn server:app --port 8000      # web mode (localhost/LAN)
-python desktop.py                             # desktop mode (profile, AI key, organizer)
+.venv/bin/python desktop.py                   # desktop app
+.venv/bin/python -m uvicorn server:app --port 8000   # web mode, open localhost:8000
 ```
 
-Desktop exe: `pyinstaller AutoLAB.spec` → `dist/AutoLAB.exe`.
+Tests: `python tests/run_all.py` (smoke tests for the solve pipeline, the HTTP
+API, templates, Gemini helpers, billing and the PDF editor).
 
-## Deploy to Vercel
-
-The repo is Vercel-ready (`vercel.json` + `api/index.py` wrap the FastAPI app).
-Import the GitHub repo in Vercel and deploy — no settings needed. The hosted
-version serves find & replace (with screenshot patching), document editing,
-template fill, and full AI record generation (Gemini writes the code + output,
-labshot renders the screenshots — no compilers needed); the solve pipeline
-(actually running code) is desktop-only and hides itself automatically.
-
-## Payments / credits (optional)
-
-The site can run a prepaid-credits system (₹1 = 1 credit, Razorpay top-ups,
-Supabase accounts + wallet). It is **off by default** — everything stays
-BYO-key and free until you set these env vars on the server:
-
-| Env var | From |
-|---------|------|
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY` | Supabase dashboard → Settings → API |
-| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Razorpay dashboard → API keys |
-| `RAZORPAY_WEBHOOK_SECRET` | Razorpay dashboard → Webhooks (optional backup path) |
-| `GEMINI_API_KEY` | the server-side key paid ops run on |
-
-One-time DB setup: paste `supabase_setup.sql` into Supabase → SQL Editor →
-Run. Sign-in is email OTP (change Supabase's magic-link email template to
-contain `{{ .Token }}`).
-
-Prices live in `billing.py` (`PRICES`). Text find & replace is always free;
-any AI op is also free when the user brings their own Gemini key. Failed paid
-ops auto-refund.
+Building the exe: `pyinstaller AutoLAB.spec --clean --noconfirm` on Windows,
+which gives you `dist/AutoLAB.exe`. CI does this on every push and attaches it
+to the release when a `v*` tag is pushed (`.github/workflows/build.yml`).
 
 ## What's inside
 
 | File | Does |
 |------|------|
-| `server.py` | FastAPI backend — all `/api/*` endpoints |
-| `autolab.py` | docx find/replace + block extraction/editing |
-| `pdfedit.py` | PDF spans in/out — automatic font finding, in-place text replacement (`python pdfedit.py` self-checks) |
-| `gemini.py` | Gemini API client + in-place screenshot patching |
-| `billing.py` | Supabase auth + credit wallet + Razorpay (stdlib HTTP only) |
-| `supabase_setup.sql` | one-time DB schema — paste into Supabase SQL Editor |
-| `runner.py` | executes generated code (python/c/cpp/java) with timeouts; `run_pair` handles server+client socket labs |
-| `labshot.py` | draws the screenshots — Windows terminal + VS Code windows, URK spoofing (`line`/`title`/`prompt`) |
-| `assemble.py` | writes a solved question (heading, code block, images) into a docx |
+| `desktop.py` | desktop launcher: in-process server + native window (pywebview) |
+| `server.py` | FastAPI backend, all `/api/*` endpoints |
+| `runner.py` | runs code (python/c/cpp/java) with timeouts; `run_pair` for server+client labs; checks the compilers are installed |
+| `labshot.py` | draws the screenshots: Windows terminal and VS Code windows |
+| `assemble.py` | writes a solved question (heading, code, images) into a docx |
+| `autolab.py` | docx find/replace and block extraction/editing |
+| `pdfedit.py` | PDF in-place text editing with automatic font finding |
+| `gemini.py` | Gemini API client and in-place screenshot patching |
 | `make_template.py` | builds the neutral record template |
 | `static/` | frontend (vanilla JS, no build step) |
-| `api/index.py` | Vercel serverless entry point |
+| `tests/` | smoke tests, `run_all.py` runs them all |
 
-## Tests
+## Self-hosting extras (optional)
 
-Each `*_smoke.py` is a runnable check; the big one is the full pipeline:
+**Vercel:** the repo deploys as-is (`vercel.json` + `api/index.py`). The
+hosted version does everything except actually running code, because there are
+no compilers there. Gemini writes the output instead, and the solve form hides
+itself.
 
-```
-python solved_smoke.py     # run → render → assemble → verify (prints PASS)
-```
+**Prepaid credits:** `billing.py` contains an optional Supabase + Razorpay
+credit wallet for a hosted instance. It is **off unless you set these env
+vars**, so the app stays bring-your-own-key and free:
+
+| Env var | From |
+|---------|------|
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_KEY` | Supabase → Settings → API |
+| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | Razorpay dashboard |
+| `GEMINI_API_KEY` | the server-side key paid operations use |
+
+Schema: paste `supabase_setup.sql` into the Supabase SQL editor. Prices are in
+`billing.py` (`PRICES`).
+
+## License
+
+MIT, see [LICENSE](LICENSE).

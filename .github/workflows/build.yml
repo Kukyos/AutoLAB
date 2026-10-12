@@ -1,0 +1,46 @@
+# Tests + Windows build. On a v* tag it also publishes AutoLAB.exe to the
+# GitHub Release for that tag. The .exe has to be built on Windows --
+# PyInstaller can't cross-compile.
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"   # test output has em dashes; cp1252 console would choke
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Test
+        run: python tests/run_all.py
+
+      - name: Build AutoLAB.exe
+        run: pyinstaller AutoLAB.spec --clean --noconfirm
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AutoLAB-windows
+          path: dist/AutoLAB.exe
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/AutoLAB.exe
+          draft: true   # notes get written by hand, then it's published
